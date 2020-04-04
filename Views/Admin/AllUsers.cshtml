@@ -1,0 +1,93 @@
+﻿@model IEnumerable<IEP_Projekat.Models.Korisnik>
+
+@{
+    ViewBag.Title = "View";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@if (Session["KorisnikUloga"] != null && Session["KorisnikUloga"].ToString() == "2")
+{
+    <h2>List of users</h2>
+
+    <table class="table">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Ime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Prezime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Mail)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Lozinka)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Tokeni)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Uloga)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Private)
+            </th>
+            <th></th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Ime)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Prezime)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Mail)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Lozinka)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Tokeni)
+                </td>
+                @if (item.Uloga.ToString() == "2")
+                {
+                    <td>Admin</td>}
+                @if (item.Uloga.ToString() == "1")
+                {
+                    <td>Agent</td>}
+                @if (item.Uloga.ToString() == "0")
+                {
+                    <td>Korisnik</td>}
+                @if (item.Status.ToString() == "2")
+                {
+                    <td>Ceka potvrdu</td>}
+                @if (item.Status.ToString() == "1")
+                {
+                    <td>Aktivan</td>}
+                @if (item.Status.ToString() == "0")
+                {
+                    <td>Neaktivan</td>}
+                @if (item.Private)
+                {
+                    <td>Da</td>}
+                @if (!item.Private)
+                {
+                    <td>Ne</td>}
+                <td>
+                    @Html.ActionLink("Edit", "EditUserPage", new { id = item.KorisnikId })
+                </td>
+            </tr>
+        }
+
+    </table>
+}
+else
+{
+    <h2>You are not authorized to view this part of the site.</h2>
+}

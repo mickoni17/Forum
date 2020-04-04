@@ -1,0 +1,76 @@
+﻿
+<style>
+    body {
+        padding-top: 0px;
+    }
+
+    .navbar {
+        margin-bottom: 15px;
+    }
+</style>
+<script>
+    function clearPlaceholders() {
+        localStorage.setItem("LoginMail", null);
+        localStorage.setItem("LoginPassword", null);
+    }
+</script>
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="#">@Html.ActionLink("FoRoom", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            @{
+                if (Session["KorisnikId"] == null)
+                {
+                    <li class="nav-item">
+                        <a>@Html.ActionLink("Register", "RegisterPage", "Home", new { area = "" }, new { @class = "nav-link" })</a>
+                    </li>
+                    <li class="nav-item">
+                        <a>@Html.ActionLink("Login", "LoginPage", "Home", new { area = "" }, new { @class = "nav-link" })</a>
+                    </li>
+                }
+                else
+                {
+                    string userId = Session["KorisnikId"].ToString();
+                    <li>
+                        <a>@Html.ActionLink("Profile", "ProfilePage", "Home", new { id = @userId.ToString() }, new { @class = "nav-link" })</a>
+                    </li>
+                    <li class="nav-item" onclick="clearPlaceholders()">
+                        <a>@Html.ActionLink("Logout", "Logout", "Home", new { area = "" }, new { @class = "nav-link" })</a>
+                    </li>
+                    if (Session["KorisnikId"] != null && Session["KorisnikUloga"].ToString() == "0")
+                    {
+                        <li class="nav-item">
+                            <a>@Html.ActionLink("Tokens", "TokensPage", "Client", new { area = "" }, new { @class = "nav-link" })</a>
+                        </li>
+                        <li class="nav-item">
+                            <a>@Html.ActionLink("Channels", "ChannelsPage", "Client", new { area = "" }, new { @class = "nav-link" })</a>
+                        </li>
+                    }
+                    if (Session["KorisnikId"] != null && Session["KorisnikUloga"].ToString() == "1")
+                    {
+                        <li class="nav-item">
+                            <a>@Html.ActionLink("Channels", "AllChannels", "Agent", new { area = "" }, new { @class = "nav-link" })</a>
+                        </li>
+                    }
+                }
+            }
+
+        </ul>
+        @{
+            if (Session["KorisnikId"] != null && Session["KorisnikUloga"]!=null)
+            {
+                if (Session["KorisnikUloga"].ToString() == "2")
+                {
+                    <a>@Html.ActionLink("Settings", "AdminSettings", "Admin", new { area = "" }, new { @class = "nav-link" })</a>
+                }
+            }
+        }
+
+    </div>
+</nav>

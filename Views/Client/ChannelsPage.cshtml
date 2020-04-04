@@ -1,0 +1,79 @@
+﻿@model dynamic
+@{
+    ViewBag.Title = "ChannelsPage";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    [name=closeChannel] {
+        color:blue;
+    }
+    [name=closeChannel]:hover {
+        color: blue;
+        text-decoration: underline;
+        cursor: pointer;
+    }
+</style>
+@if (Session["KorisnikUloga"] != null && Session["KorisnikUloga"].ToString() == "0")
+{
+    <button style="padding-left:0" class="btn btn-link" type="button" data-toggle="modal" data-target="#exampleModal">+ Create channel</button>
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Create a new channel</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form method="post" action='~/Client/CreateChannel'>
+                    <div class="modal-body">
+                        The price for a new channel is @Model.Cena tokens <br /><br />
+                        <textarea style="margin-right:0" class="form-control" placeholder="Channel name" name="naslovKanala" id="odgovorNaPitanje" rows="1"></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Create</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+}
+<br />
+My channels:<br />
+@{
+    List<IEP_Projekat.Models.Kanal> kanali = Model.Kanali;
+    foreach (IEP_Projekat.Models.Kanal k in kanali)
+    {
+        <br />
+        <div class="card" style="width: 18rem;">
+            <div class="card-body">
+                <h5 class="card-title">@k.Naziv</h5>
+                <h6 class="card-subtitle mb-2 text-muted">@k.VremeOtvaranja</h6>
+                @Html.ActionLink("Open", "Channel", "Home", new { id = k.KanalId }, new { @class = "card-link" })
+                <span name="closeChannel" class="card-link" value="@k.KanalId">Close</span>
+
+            </div>
+        </div>
+    }
+}
+@section scripts{
+    <script tpye="text/javascript" src="~/Scripts/jquery-3.4.1.js"></script>
+    <script tpye="text/javascript" src="~/Scripts/jquery.signalR-2.4.1.js"></script>
+    <script tpye="text/javascript" src="~/signalR/hubs"></script>
+    <script>
+
+        $(document).ready(function () {
+            
+            var hub = $.connection.myHub;
+            
+            $.connection.hub.start().done(function () {
+                
+                $('span[name=closeChannel]').on('click', function () {
+                    hub.server.closeChannel($(this).attr('value'));
+                    window.location.href = '@Url.Action("CloseChannel", "Client", new { id = "ID" })'.replace("ID", $(this).attr('value'));;
+                });
+            });
+        });
+    </script>
+}

@@ -1,0 +1,61 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = "Profile";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h5>@Model.Korisnik.Ime  @Model.Korisnik.Prezime</h5>
+<h6>@Model.Korisnik.Mail</h6>
+@if (Session["KorisnikId"]!=null &&(Session["KorisnikId"].ToString() == Model.Korisnik.KorisnikId.ToString() || Session["KorisnikId"].ToString() == "9"))
+{
+    <h7>Tokeni: @Model.Korisnik.Tokeni</h7>
+    if (Model.Korisnik.Uloga == 0)
+    {
+        <h6>Korisnik</h6>
+    }
+    else if (Model.Korisnik.Uloga == 1)
+    {
+        <h6>Agent</h6>
+    }
+    else
+    {
+        <h6>Admin</h6>
+    }
+    if (Model.Korisnik.Status == 0)
+    {
+        <h6>Neaktivan</h6>
+    }
+    else if (Model.Korisnik.Status == 1)
+    {
+        <h6>Aktivan</h6>
+    }
+    else
+    {
+        <h6>Ceka verifikaciju</h6>
+    }
+    if (Model.Korisnik.Private == true)
+    {
+        <h6>Privatan</h6>
+    }
+    else
+    {
+        <h6>Otkljucan</h6>
+    }
+}
+@{
+    bool hlp = Session["KorisnikId"]!=null && (Session["KorisnikId"].ToString() == Model.Korisnik.KorisnikId.ToString() || Session["KorisnikId"].ToString() == "9");
+    if (hlp || (!hlp && Model.Korisnik.Private == false))
+    {
+        <h5>Pitanja korisnika:</h5>
+        foreach (var p in Model.Pitanje)
+        {
+            <h6>@p.Naslov</h6>
+        }
+        <h5>Odgovori korisnika:</h5>
+        foreach (var o in Model.Odgovor)
+        {
+            <h6>@o.Tekst</h6>
+        }
+    }
+}
+

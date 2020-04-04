@@ -1,0 +1,74 @@
+﻿@model IEP_Projekat.Models.Korisnik
+@{
+    ViewBag.Title = "EditUser";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@if (Session["KorisnikUloga"] != null && Session["KorisnikUloga"].ToString() == "2")
+{
+    <form method="post" action="~/Admin/EditUser">
+        @if (Model != null)
+        {
+            <textarea class="form-control" name="uId" hidden>@Model.KorisnikId</textarea>
+        }
+        <div class="form-group">
+            <label for="uName">Name</label>
+            <input type="text" class="form-control" name="uName" @if (Model != null) { @Html.Raw("value = \"" + Model.Ime + "\""); }>
+        </div>
+        <div class="form-group">
+            <label for="uSurname">Surname</label>
+            <input type="text" class="form-control" name="uSurname" @if (Model != null) { @Html.Raw("value = \"" + Model.Prezime + "\""); }>
+        </div>
+        <div class="form-group">
+            <label for="uMail">Mail</label>
+            <input type="text" class="form-control" name="uMail" @if (Model != null) { @Html.Raw("value = \"" + Model.Mail + "\""); }>
+        </div>
+        <div class="form-group">
+            <label for="uPassword">Password</label>
+            <input type="text" class="form-control" name="uPassword" @if (Model != null) { @Html.Raw("value = \"" + Model.Lozinka + "\""); }>
+        </div>
+        @if (Model==null || Model.Uloga != 2)
+        {
+            <div class="form-group">
+                <label for="uRole">Role</label><br />
+                <select name="uRole" class="browser-default custom-select form-control">
+                    <option @if (Model != null && Model.Uloga == 0) { @Html.Raw("selected") ; }>
+                        Client
+                    </option>
+                    <option @if (Model != null && Model.Uloga == 1) { @Html.Raw("selected") ; }>
+                        Agent
+                    </option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="uStatus">Status</label><br />
+                <select name="uStatus" class="browser-default custom-select form-control">
+                    <option @if (Model != null && Model.Status == 1) { @Html.Raw("selected") ; }>
+                        Active
+                    </option>
+                    <option @if (Model != null && Model.Status == 0) { @Html.Raw("selected") ; }>
+                        Inactive
+                    </option>
+                </select>
+            </div>
+        }
+        <div class="form-group">
+            <label for="uPrivacy">Privacy</label><br />
+            <select name="uPrivacy" class="browser-default custom-select form-control">
+                <option @if (Model != null && !Model.Private) { @Html.Raw("selected") ; }>Public</option>
+                <option @if (Model != null && Model.Private) { @Html.Raw("selected") ; }>Private</option>
+            </select>
+        </div>
+        @if (Model != null)
+        {
+            <button type="submit" class="btn btn-primary">Save changes</button>
+        }
+        else
+        {
+            <button type="submit" class="btn btn-primary">Create user</button>
+        }
+    </form>
+}
+else
+{
+    <h2>You are not authorized to view this part of the site.</h2>
+}

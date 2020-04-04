@@ -1,0 +1,67 @@
+﻿
+@{
+    ViewBag.Title = "Register";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script>
+    function filler() {
+        if (document.getElementById("exampleName").value != null) {
+            localStorage.setItem("RegisterName", document.getElementById("exampleName").value);
+        }
+        if (document.getElementById("exampleSurname").value != null) {
+            localStorage.setItem("RegisterSurname", document.getElementById("exampleSurname").value);
+        }
+        if (document.getElementById("exampleInputEmail1").value != null) {
+            localStorage.setItem("RegisterMail", document.getElementById("exampleInputEmail1").value);
+        }
+        if (document.getElementById("exampleInputPassword1").value != null) {
+            localStorage.setItem("RegisterPass", document.getElementById("exampleInputPassword1").value);
+        }
+    }
+    function fillPlaceholders() {
+        if (localStorage.getItem("RegisterName") != null) {
+            document.getElementById("exampleName").value = localStorage.getItem("RegisterName");
+        }
+        if (localStorage.getItem("RegisterSurname") != null) {
+            document.getElementById("exampleSurname").value = localStorage.getItem("RegisterSurname");
+        }
+        if (localStorage.getItem("RegisterMail") != null) {
+            document.getElementById("exampleInputEmail1").value = localStorage.getItem("RegisterMail");
+        }
+        if (localStorage.getItem("RegisterPass") != null) {
+            document.getElementById("exampleInputPassword1").value = localStorage.getItem("RegisterPass");
+        }
+    }
+</script>
+<head>
+
+</head>
+<body onload="fillPlaceholders()">
+    <h2>Register</h2>
+    <form method="post" action="~/Home/Register" >
+        <div class="form-group">
+            <label for="exampleName">Name</label>
+            <input name="k.Ime" type="text" class="form-control" id="exampleName" placeholder="Enter name">
+        </div>
+        <div class="form-group">
+            <label for="exampleSurname">Surname</label>
+            <input name="k.Prezime" type="text" class="form-control" id="exampleSurname" placeholder="Enter surname">
+        </div>
+        <div class="form-group">
+            <label for="exampleInputEmail1">Email address</label>
+            <input name="k.Mail" type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter mail">
+            <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+        </div>
+        <div class="form-group">
+            <label for="exampleInputPassword1">Password</label>
+            <input name="k.Lozinka" type="password" class="form-control" id="exampleInputPassword1" placeholder="Enter password">
+        </div>
+        @{
+            if (ViewBag.ErrorMessage == "Mail is already taken!" || ViewBag.ErrorMessage == "Password must have at least 6 characters!" || ViewBag.ErrorMessage == "Please fill all the fields.")
+            {
+                <span style="color:red">@ViewBag.ErrorMessage</span><br /><br />
+            }
+        }
+        <button onclick="filler()" type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</body>

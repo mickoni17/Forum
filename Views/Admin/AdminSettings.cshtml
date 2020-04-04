@@ -1,0 +1,132 @@
+﻿@model dynamic
+@{
+    ViewBag.Title = "AdminSettings";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@if (Session["KorisnikUloga"] != null && Session["KorisnikUloga"].ToString() == "2")
+{
+    <div class="accordion" id="accordionExample">
+        <div class="card">
+            <div class="card-header" id="headingOne">
+                <h2 class="mb-0">
+                    <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                        Add question category
+                    </button>
+                </h2>
+            </div>
+
+            <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample">
+                <div class="card-body">
+                    <form method="post" action="~/Admin/AddCategory">
+                        <div class="form-group">
+                            <label for="exampleInputEmail1">New category name</label>
+                            <input type="text" name="category" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                            <button style="margin-top:10px;" type="submit" class="btn btn-primary">Add</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header" id="headingTwo">
+                <h2 class="mb-0">
+                    <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                        Edit token packages
+                    </button>
+                </h2>
+            </div>
+            <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+                <div class="card-body">
+                    <form method="post" action="~/Admin/UpdatePackages">
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon1">Silver amount</span>
+                            </div>
+                            <input type="number" name="sa" class="form-control" aria-label="Username" value="@Model.SA" aria-describedby="basic-addon1">
+                        </div>
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon12">Silver price ($)</span>
+                            </div>
+                            <input type="number" name="sp" class="form-control" aria-label="Username" value="@Model.SP" aria-describedby="basic-addon12">
+                        </div>
+                        <br />
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon2">Gold amount</span>
+                            </div>
+                            <input type="number" name="ga" class="form-control" aria-label="Username" value="@Model.GA" aria-describedby="basic-addon2">
+                        </div>
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon22">Gold price ($)</span>
+                            </div>
+                            <input type="number" name="gp" class="form-control" aria-label="Username" value="@Model.GP" aria-describedby="basic-addon22">
+                        </div>
+                        <br />
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon3">Platinum amount</span>
+                            </div>
+                            <input type="number" name="pa" class="form-control" aria-label="Username" value="@Model.PA" aria-describedby="basic-addon3">
+                        </div>
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon32">Platinum price ($)</span>
+                            </div>
+                            <input type="number" name="pp" class="form-control" aria-label="Username" value="@Model.PP" aria-describedby="basic-addon32">
+                        </div>
+                        <button style="margin-top:10px;" type="submit" class="btn btn-primary">Update</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header" id="headingThree">
+                <h2 class="mb-0">
+                    <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                        Define communication channel price
+                    </button>
+                </h2>
+            </div>
+            <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
+                <div class="card-body">
+                    <form method="post" action="~/Admin/UpdateChannelPrice">
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon4">Price to open ($)</span>
+                            </div>
+                            <input type="number" name="ch" class="form-control" aria-label="Username" value="@Model.CH" aria-describedby="basic-addon4">
+                        </div>
+                        <button style="margin-top:10px;" type="submit" class="btn btn-primary">Update</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header" id="headingFour">
+            <h2 class="mb-0">
+                <button style="padding:0;" class="btn btn-link" type="button">
+                    @Html.ActionLink("View all users", "AllUsers", "Admin", new { area = "" }, new { @class = "nav-link" })
+                </button>
+            </h2>
+        </div>
+
+    </div>
+    <div class="card">
+        <div class="card-header" id="headingFive">
+            <h2 class="mb-0">
+                <button style="padding:0;" class="btn btn-link" type="button">
+                    @Html.ActionLink("Create user", "CreateUser", "Admin", new { area = "" }, new { @class = "nav-link" })
+                </button>
+            </h2>
+        </div>
+
+    </div>
+}
+else
+{
+    <h2>You are not authorized to view this part of the site.</h2>
+}
+

@@ -1,0 +1,15 @@
+﻿@model System.Boolean
+@{
+    ViewBag.Title = "Test";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Test</h2>
+<h3>
+    @{
+        if (Model)
+        { <h2>Uspesno</h2> }
+        else
+        { <h2>Neuspesno</h2> }
+    }
+</h3>

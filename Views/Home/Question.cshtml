@@ -1,0 +1,249 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = "Question";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script>
+    function sortiraj() {
+        var selectBox = document.getElementById("sort");
+        var selectedValue = selectBox.options[selectBox.selectedIndex].innerHTML;
+        window.location.href = '@Url.Action("Question", "Home", new { id = Model.Pitanje.PitanjeId, sortiranje = "ID" })'.replace("ID", selectedValue);
+    }
+    function sortSelect() {
+        var selVal="@ViewBag.SortiranjeOdgovora";
+        var selectBox = document.getElementById("sort");
+        for (i = 0; i < selectBox.length; i++) {
+            if (selectBox.options[i].innerHTML == selVal)
+                selectBox.options[i].selected = 'selected';
+        }
+    }
+</script>
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+
+<h3>@Model.Pitanje.Naslov</h3>
+<h4>@Model.Pitanje.Tekst</h4>
+<h4><a href="~/Home/ProfilePage/@Model.Pitanje.AutorId">@Model.ImeAutora</a></h4>
+<p>@Model.Pitanje.VremePravljenja</p>
+@if (Session["KorisnikId"] != null && Session["KorisnikId"].ToString() == Model.Pitanje.AutorId.ToString() && Model.Pitanje.VremeZakljucavanja.Year == 1900)
+{
+    <button style="padding-left:0" class="btn btn-link" type="button" onclick="location.href='@Url.Action("Lock", "Client",new { pitanjeId=Model.Pitanje.PitanjeId})'">Lock question</button>
+}
+@if (Session["KorisnikId"] != null && (Session["KorisnikUloga"].ToString() == "1" || Session["KorisnikUloga"].ToString() == "2") && Model.Pitanje.VremeZakljucavanja.Year > 1900)
+{
+    <button style="padding-left:0" class="btn btn-link" type="button" onclick="location.href='@Url.Action("Unlock", "Client",new { pitanjeId=Model.Pitanje.PitanjeId})'">Unlock question</button>
+}
+<hr />
+@{
+    if (Session["KorisnikId"] != null && Model.Pitanje.VremeZakljucavanja.Year == 1900)
+    {
+        <form method="post" action='~/Registered/Answer'>
+            <div class="form-group">
+                <label for="odgovorNaPitanje">Write answer here</label>
+                <textarea class="form-control" name="odgovorNaPitanje" id="odgovorNaPitanje" rows="3"></textarea>
+            </div>
+            <textarea class="form-control" name="pitanjeId" hidden>@Model.Pitanje.PitanjeId</textarea>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+        <hr />
+    }
+}
+
+Sort answers by:<br />
+<select id="sort" onchange="sortiraj()" class="browser-default custom-select d-inline">
+    <option>Time</option>
+    <option>Likes</option>
+    <option>Dislikes</option>
+</select>
+<script>sortSelect();</script>
+<br /> <br />
+@foreach (var r in Model.Odgovori)
+{
+    string heading = "heading" + r.OdgovorId;
+    string collapse = "collapse" + r.OdgovorId;
+    <div class="accordion" id="accordionExample">
+        <div class="card">
+            <div class="card-header" id="@heading">
+                <h2 class="mb-0">
+                    <h5>@r.Tekst</h5>
+                    @{
+                        int numl = 0;
+                        foreach (var lajk in Model.Lajkovi)
+                        {
+                            if (lajk.OdgovorId == r.OdgovorId) { numl++; }
+                        }
+                        if (numl > 0)
+                        {
+                            <span>@numl</span>
+                        }
+                        <i class="far fa-thumbs-up" title="Like" onclick="location.href='@if (Session["KorisnikId"] != null)
+                       {@Url.Action("Like", "Registered", new { pitanjeId = Model.Pitanje.PitanjeId, odgovorId = r.OdgovorId, like = 1 })}'"></i>
+                        int numd = 0;
+                        foreach (var lajk in Model.Dislajkovi)
+                        {
+                            if (lajk.OdgovorId == r.OdgovorId) { numd++; }
+                        }
+                        if (numd > 0)
+                        {
+                            <span>@numd</span>
+                        }
+                        <i class="far fa-thumbs-down" title="Dislike" onclick="location.href='@if (Session["KorisnikId"] != null)
+                       {@Url.Action("Like", "Registered", new { pitanjeId = Model.Pitanje.PitanjeId, odgovorId = r.OdgovorId, like = -1 })}'"></i>
+                        string hlp = "modal" + r.OdgovorId;
+                        <i class="far fa-comment-dots" title="Reply" data-toggle="modal" data-target="#@hlp"></i>
+                        <div class="modal fade" id="@hlp" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabel">Reply to: @r.Tekst</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <form method="post" action='~/Registered/Answer'>
+                                        <div class="modal-body">
+
+                                            <div class="form-group">
+                                                <textarea style="margin-right:0" class="form-control" name="odgovorNaPitanje" id="odgovorNaPitanje" rows="3"></textarea>
+                                            </div>
+                                            <textarea class="form-control" name="pitanjeId" hidden>@Model.Pitanje.PitanjeId</textarea>
+                                            <textarea class="form-control" name="replyNaId" hidden>@r.OdgovorId</textarea>
+
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-primary">Submit</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        if (Session["KorisnikId"] != null && Session["KorisnikUloga"].ToString() == "2")
+                        {
+                        <i class="fas fa-trash-alt" title="Delete" onclick="location.href='@Url.Action("DeleteComment", "Admin", new { odgovorId = r.OdgovorId, pitanjeId= Model.Pitanje.PitanjeId })'"></i>
+                        }
+                        <br />
+
+                        List<IEP_Projekat.Models.Odgovor> lista = Model.Reply;
+                        int numRep = 0;
+                        foreach (IEP_Projekat.Models.Odgovor odg in lista)
+                        {
+                            if (odg.ReplyNaId == r.OdgovorId)
+                            {
+                                numRep++;
+                                break;
+                            }
+                        }
+                        if (numRep > 0)
+                        {
+                            <button style="padding-left:0" class="btn btn-link" type="button" data-toggle="collapse" data-target="#@collapse" aria-expanded="true" aria-controls="@collapse">
+                                View replies
+                            </button>
+                        }
+                    }
+                </h2>
+            </div>
+            @if (numRep > 0)
+            {
+                <div id="@collapse" class="collapse" aria-labelledby="@heading" data-parent="#accordionExample">
+                    <div class="card-body">
+                        @Html.Raw(ispisiOdgovor(r.OdgovorId, 1, Model.Pitanje.PitanjeId))
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}
+@if (Session["KorisnikId"] != null && (Session["KorisnikId"].ToString() == Model.Pitanje.AutorId.ToString() || Session["KorisnikUloga"].ToString()=="2"))
+{
+    <br /><br />
+    <button style="padding-left:0" class="btn btn-link" type="button" data-toggle="modal" data-target="#exampleModal2">Delete question</button>
+    <div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel2">Are you sure you want to delete the question?</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form method="post" action="~/Client/DeleteQuestion">
+                    <div class="modal-body">
+                        <textarea class="form-control" name="pitanjeId" hidden>@Model.Pitanje.PitanjeId</textarea>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                        <button type="submit" class="btn btn-primary">Yes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+}
+
+@functions{
+    string ispisiOdgovor(int replyNaId, int razmaci, int pitanjeId)
+    {
+        string rez = "";
+        foreach (IEP_Projekat.Models.Odgovor rep in Model.Reply)
+        {
+            if (rep.ReplyNaId == replyNaId)
+            {
+                int numl = 0;
+                foreach (var lajk in Model.Lajkovi)
+                {
+                    if (lajk.OdgovorId == rep.OdgovorId) { numl++; }
+                }
+                int numd = 0;
+                foreach (var lajk in Model.Dislajkovi)
+                {
+                    if (lajk.OdgovorId == rep.OdgovorId) { numd++; }
+                }
+                for (int i = 0; i < razmaci; i++)
+                {
+                    rez += "&nbsp";
+                }
+                rez += rep.Tekst + " &nbsp";
+                rez += (numl > 0 ? numl.ToString() : "") + "<i title=\"Like\" class='far fa-thumbs-up'" + (Session["KorisnikId"] == null ? "" : "onclick=\"location.href='/Registered/Like?pitanjeId=" + pitanjeId + "&odgovorId=" + rep.OdgovorId + "&like=1'\"") + "></i>";
+                rez += (numd > 0 ? numd.ToString() : "") + "<i title=\"Dislike\" class='far fa-thumbs-down'" + (Session["KorisnikId"] == null ? "" : "onclick=\"location.href='/Registered/Like?pitanjeId=" + pitanjeId + "&odgovorId=" + rep.OdgovorId + "&like=-1'\"") + "></i>";
+
+
+                string hlp = "modal" + rep.OdgovorId;
+                rez += "<i title=\"Reply\" class=\"far fa-comment-dots\" data-toggle=\"modal\" data-target=\"#" + hlp + "\"></i>";
+                rez += " <div class=\"modal fade\" id=\"" + hlp + "\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"exampleModalLabel\" aria-hidden=\"true\">";
+                rez += "<div class=\"modal-dialog\" role=\"document\"><div class=\"modal-content\"><div class=\"modal-header\"><h5 class=\"modal-title\" id=\"exampleModalLabel\">Reply to: " + rep.Tekst + "</h5><button type = \"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden = \"true\" > &times;</span ></button >";
+                rez += "</div><form method = \"post\" action=\"/Registered/Answer\"><div class=\"modal-body\">";
+                rez += "<div class=\"form-group\"><textarea style = \"margin-right:0\" class=\"form-control\" name=\"odgovorNaPitanje\" id=\"odgovorNaPitanje\" rows=\"3\"></textarea></div>";
+                rez += "<textarea class=\"form-control\" name=\"pitanjeId\" hidden>" + pitanjeId + "</textarea>";
+                rez += "<textarea class=\"form-control\" name=\"replyNaId\" hidden>" + rep.OdgovorId + "</textarea>";
+                rez += "</div><div class=\"modal-footer\"><button type = \"button\" class=\"btn btn-secondary\" data-dismiss=\"modal\">Close</button><button type = \"submit\" class=\"btn btn-primary\">Submit</button></div></form></div></div></div>";
+                if (Session["KorisnikId"] != null && Session["KorisnikUloga"].ToString() == "2")
+                {
+                    rez += "<i class=\"fas fa-trash-alt\" title=\"Delete\" onclick=\"location.href = '/Admin/DeleteComment?odgovorId="+rep.OdgovorId+"&pitanjeId="+pitanjeId+"'\"></i>";
+                }
+
+
+                rez += "<br>";
+                bool jelImaJos = false;
+                foreach (IEP_Projekat.Models.Odgovor rep2 in Model.Reply)
+                {
+                    if (rep2.OdgovorId == rep.OdgovorId)
+                    {
+                        jelImaJos = true;
+                        break;
+                    }
+                }
+                if (jelImaJos)
+                {
+                    rez += ispisiOdgovor(rep.OdgovorId, razmaci + 4, pitanjeId);
+                }
+                else
+                {
+                    return rez;
+                }
+            }
+        }
+        return rez;
+    }
+}
+
+
+

@@ -1,0 +1,37 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Login</h2>
+<head>
+
+</head>
+<body>
+    <form id="form1" method="post" action="~/Home/Login">
+        <div class="form-group">
+            <label for="exampleInputEmail1">Email address</label>
+            <input name="k.Mail" type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
+            <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+        </div>
+        <div class="form-group">
+            <label for="exampleInputPassword1">Password</label>
+            <input name="k.Lozinka" type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+        </div>
+        <div class="form-group form-check">
+            <input name="b" type="checkbox" class="form-check-input" id="exampleCheck1">
+            <label class="form-check-label" for="exampleCheck1">Remember me</label>
+        </div>
+        @{
+            if (ViewBag.ErrorMessage == "Invalid username or password!")
+            {
+                <span style="color:red">@ViewBag.ErrorMessage</span> <br /><br />
+            }
+        }
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    <br />
+    <button style="padding-left:0;" class="btn btn-link" type="button">
+        @Html.ActionLink("Forgot password?", "ForgotPassword1", "Home", new { area = "" }, new { @class = "" })
+    </button>
+</body>

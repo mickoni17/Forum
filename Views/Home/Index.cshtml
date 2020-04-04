@@ -1,0 +1,191 @@
+﻿@model dynamic
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script>
+    var show = false;
+    var page = 0;
+    function filterIndex() {
+        var selectBox = document.getElementById("categSelect");
+        var selectedValue = selectBox.options[selectBox.selectedIndex].innerHTML;
+        window.location.href = '@Url.Action("Index", "Home", new { filterKategorije = "ID" })'.replace("ID", selectedValue);;
+    }
+    function optionSelect() {
+        var selVal = "@ViewBag.FilterKategorija";
+        var selectBox = document.getElementById("categSelect");
+        for (i = 0; i < selectBox.length; i++) {
+            if (selectBox.options[i].innerHTML == selVal)
+                selectBox.options[i].selected = 'selected';
+        }
+    }
+    function showMyQuestions() {
+        var x = document.getElementsByName("autor");
+        x.forEach(hide);
+    }
+    function hide(item) {
+        var y = document.getElementById("sessionId").value;
+        
+        if (item.id != y) {
+            if (item.style.display == 'none') {
+                item.style.display = 'block';
+            }
+            else {
+                item.style.display = 'none';
+            }
+        }
+        
+    }
+    function str() {
+        var x = document.getElementsByName("autor");
+        for (j = 0; j < x.length; j++) {
+            var rez = false;
+            for (var i = page*5; i < page * 5+5; i++) {
+                if (x[j].classList.contains(i)) {
+                    rez = true;
+                }
+            }
+            if (rez == false) {
+                x[j].style.display = 'none';
+            }
+            else {
+                x[j].style.display = 'block';
+            }
+        }
+    }
+    function pagedown() {
+        if (page > 0) {
+            page--;
+            str();
+        }
+    }
+    function pageup() {
+        if (page < parseInt(document.getElementsByName("autor").length / 5, 10)) {
+            page++;
+            str();
+        }
+    }
+</script>
+<head>
+    <style>
+        .card {
+            padding: 20px;
+            background-color: gray;
+        }
+        .t\'1900\' {
+            background-color: white;
+        }
+        .card:hover {
+            background-color: yellow;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <input type="hidden" id="sessionId" value="@Session["KorisnikId"]" />
+
+    <select id="categSelect" style="width:180px" onchange="filterIndex()" class="browser-default custom-select d-inline">
+        <option>Sve kategorije</option>
+        @foreach (var r in Model.Kategorije)
+        {
+            <option>@r.Naziv</option>
+        }
+    </select>
+    <script>optionSelect();</script>
+
+    <form class="d-inline" method="post" action="~/Home/Index">
+        <div class="md-form active-cyan-2 mb-3 d-inline">
+            <input name="pretraga" class="form-control d-inline" type="text" placeholder="Search" aria-label="Search">
+            <button type="submit" class="btn btn-primary d-inline">Go</button>
+            <textarea class="form-control" name="filterKategorije" hidden>@Model.FilterKategorija</textarea>
+        </div>
+    </form>
+    @if (Session["KorisnikId"] != null && Session["KorisnikUloga"].ToString() == "0")
+    {
+        <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        <input style="margin-top:15px;" type="checkbox" class="form-check-input" id="examplCheck1" onclick="showMyQuestions()">
+        <label class="form-check-label" for="examplCheck1">My questions</label>
+    }
+    <br /><br />
+    @if (Session["KorisnikUloga"] != null && Session["KorisnikUloga"].ToString() == "0")
+    {
+        <button style="padding-left:0" class="btn btn-link" type="button" data-toggle="modal" data-target="#exampleModal">+ Ask question</button>
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Create your question</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form method="post" action='~/Client/AskQuestion'>
+                        <div class="modal-body">
+                            Category:<br />
+                            <select name="kategorijaPitanja" id="categSelect" class="browser-default custom-select d-inline">
+                                <option>Sve kategorije</option>
+                                @foreach (var r in Model.Kategorije)
+                                {
+                                    <option>@r.Naziv</option>
+                                }
+                            </select>
+                            <br />
+                            Title:
+                            <textarea style="margin-right:0" class="form-control" name="naslovPitanja" id="odgovorNaPitanje" rows="1"></textarea>
+                            Description:
+                            <textarea style="margin-right:0" class="form-control" name="opisPitanja" id="odgovorNaPitanje" rows="3"></textarea>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    }
+
+
+    @if (Model.Pretraga != "")
+    {
+        <p>Search results for <i>@Model.Pretraga</i></p>
+    }
+    @{ int page = 0;}
+    @foreach (var row in Model.Pitanja)
+    {
+        string path = row.ImagePath;
+        page++;
+        if ((Model.FilterKategorija == "Sve kategorije" || Model.FilterKategorija == row.KategorijaId) && (Model.Pretraga == "" || row.Naslov.Contains(Model.Pretraga)))
+        {
+            int autorId = row.AutorId;
+        <div style="margin-bottom:20px;" name="autor" id="@autorId" class="card t'@row.VremeZakljucavanja.Year.ToString()' @page" onclick="location.href='@Url.Action("Question", "Home",new {id= row.PitanjeId})'">
+            <h2>@row.Naslov</h2>
+            <h4>@row.Tekst</h4>
+            @Html.DisplayFor(modelItem => path)
+            @{
+                int num = 0;
+                foreach (var ans in Model.Odgovori)
+                {
+                    if (ans.PitanjeId == row.PitanjeId) { num++; }
+                }
+                <p>@num odgovora</p>
+            }
+
+        </div>
+        }
+    }
+    <ul class="pagination">
+        <li class="page-item">
+            <a class="page-link" href="#" aria-label="Previous" onclick="pagedown()">
+                <span aria-hidden="true">&laquo;</span>
+            </a>
+        </li>
+        <li class="page-item">
+            <a class="page-link" href="#" aria-label="Next" onclick="pageup()">
+                <span aria-hidden="true">&raquo;</span>
+            </a>
+        </li>
+    </ul>
+    <script>str();</script>
+</body>

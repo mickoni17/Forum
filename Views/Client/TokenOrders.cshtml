@@ -1,0 +1,44 @@
+﻿@model IEnumerable<IEP_Projekat.Models.Porudzbine>
+
+@{
+    ViewBag.Title = "TokenOrders";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>My orders</h2>
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Korisnik.Ime)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Tokeni)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Cena)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Vreme)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Korisnik.Ime)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Tokeni)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Cena) $
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Vreme)
+        </td>
+    </tr>
+}
+
+</table>

@@ -1,0 +1,22 @@
+﻿@model dynamic
+@{
+    ViewBag.Title = "MailValidation";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Hello @Model.Mail, we sent you an email with a validation code. Please fill it out to use the services of FoRoom.</h2>
+<form class="d-inline" method="post" action="~/Home/Validation">
+    <div class="md-form active-cyan-2 mb-3 d-inline">
+        <input name="inputkod" class="form-control d-inline" type="text" aria-label="Search">
+        <button type="submit" class="btn btn-primary d-inline">Validate</button>
+        <textarea class="form-control" name="mail" hidden>@Model.Mail</textarea>
+        <textarea class="form-control" name="password" hidden>@Model.Password</textarea>
+        <textarea class="form-control" name="validacija" hidden>@Model.Validation</textarea>
+    </div>
+</form>
+<div style="color:red">
+@if (ViewBag.ValidationMessage != "")
+{
+    @ViewBag.ValidationMessage
+}
+</div>

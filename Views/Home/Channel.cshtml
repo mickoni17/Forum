@@ -1,0 +1,90 @@
+﻿@model dynamic
+@{
+    ViewBag.Title = "Kanal";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h2>@Model.Kanal.Naziv</h2>
+<br />
+<input type="hidden" value="@Model.Korisnik.KorisnikId" id="userId" />
+<input type="hidden" value="@Model.Kanal.KanalId" id="channelId" />
+
+<div id="messages" style="border:solid; width:90%;height:500px; overflow-y:scroll; overflow-x:hidden; display:block; word-wrap: break-word;" class="mb-4 pt-3 pb-3 pl-3">
+</div>
+<div class="input-group mb-3">
+    <input type="text" class="form-control" placeholder="Enter message here" id="msg" aria-describedby="send">
+    <div class="input-group-append">
+        <button class="btn btn-outline-secondary" type="button" id="send">Send</button>
+    </div>
+</div>
+@section scripts{
+    <script tpye="text/javascript" src="~/Scripts/jquery-3.4.1.js"></script>
+    <script tpye="text/javascript" src="~/Scripts/jquery.signalR-2.4.1.js"></script>
+    <script tpye="text/javascript" src="~/signalR/hubs"></script>
+    <script>
+
+        $(document).ready(function () {
+
+            var id = $('#userId').val();
+            var channel = $('#channelId').val();
+            var hub = $.connection.myHub;
+
+            hub.client.userJoin = function (username) {
+                var row = document.createElement("div");
+                row.classList.add("row");
+
+                var elem = document.createElement("div");
+                elem.classList.add("col-sm-4");
+                elem.style.color = "green";
+                elem.innerHTML = '<p>' + username + ' connected</p>';
+
+                row.appendChild(elem);
+
+                $('#messages').append(row);
+            };
+
+            hub.client.userLeft = function (username) {
+                var row = document.createElement("div");
+                row.classList.add("row");
+
+                var elem = document.createElement("div");
+                elem.classList.add("col-sm-4");
+                elem.style.color = "orangered";
+                elem.innerHTML = '<p>' + username + ' left</p>';
+
+                row.appendChild(elem);
+                $('#messages').append(row);
+            };
+
+            hub.client.displayMessage = function (id, message) {
+                var row = document.createElement("div");
+                row.classList.add("row");
+                var elem = document.createElement("div");
+                elem.classList.add("col-sm-10");
+                elem.innerHTML = '<p><span style="color:blue">' + id + '</span> : ' + message + '</p>';
+
+                row.appendChild(elem);
+
+                $('#messages').append(row);
+            };
+
+            $.connection.hub.start().done(function () {
+
+                hub.server.joinChannel(id, channel);
+
+                $('#send').on('click', function () {
+                    var message = $('#msg').val();
+                    
+                    if (message == "") {
+                        return;
+                    }
+                    $('#msg').val("");
+                    hub.server.send(id, message, channel);
+                });
+
+
+            });
+
+        });
+
+    </script>
+}

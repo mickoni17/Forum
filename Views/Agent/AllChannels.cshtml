@@ -1,0 +1,78 @@
+﻿@model dynamic
+@{
+    ViewBag.Title = "AllChannels";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    [name=leaveChannel] {
+        color: blue;
+    }
+
+    [name=leaveChannel]:hover {
+        color: blue;
+        text-decoration: underline;
+        cursor: pointer;
+    }
+</style>
+<h2>All current channels</h2>
+<input type="hidden" id="sessionId" value="@Session["KorisnikId"]" />
+<div class="row">
+    @{
+        List<IEP_Projekat.Models.Kanal> da = Model.Ucestvujem;
+        List<IEP_Projekat.Models.Kanal> ne = Model.Ostali;
+        List<IEP_Projekat.Models.Korisnik> kor = Model.Korisnici;
+        List<int> br = Model.Brojevi;
+        int i = 0;
+        for (i = 0; i < da.Count(); i++)
+        {
+            <div class="col-sm-6 col-md-4">
+                <div class="card" style="width: 18rem;margin:5px;">
+                    <div class="card-body">
+                        <h5 class="card-title">@da.ElementAt(i).Naziv</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">@kor.ElementAt(i).Ime</h6>
+                        <p class="card-text">@da.ElementAt(i).VremeOtvaranja</p>
+                        <p class="card-text">@br.ElementAt(i) people</p>
+                        @Html.ActionLink("Enter", "Channel", "Home", new { id = da.ElementAt(i).KanalId }, new { @class = "card-link" })
+                        <span name="leaveChannel" class="card-link" value="@da.ElementAt(i).KanalId">Leave</span>
+                    </div>
+                </div>
+            </div>
+        }
+        int j = i;
+        for (i = 0; i < ne.Count(); i++)
+        {
+            <div class="col-sm-6 col-md-4">
+                <div class="card" style="width: 18rem;margin:5px;">
+                    <div class="card-body">
+                        <h5 class="card-title">@ne.ElementAt(i).Naziv</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">@kor.ElementAt(i + j).Ime</h6>
+                        <p class="card-text">@ne.ElementAt(i).VremeOtvaranja</p>
+                        <p class="card-text">@br.ElementAt(i + j) people</p>
+                        @Html.ActionLink("Join", "JoinChannel", "Agent", new { id = ne.ElementAt(i).KanalId }, new { @class = "card-link" })
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>
+@section scripts{
+    <script tpye="text/javascript" src="~/Scripts/jquery-3.4.1.js"></script>
+    <script tpye="text/javascript" src="~/Scripts/jquery.signalR-2.4.1.js"></script>
+    <script tpye="text/javascript" src="~/signalR/hubs"></script>
+    <script>
+
+        $(document).ready(function () {
+
+            var hub = $.connection.myHub;
+
+            $.connection.hub.start().done(function () {
+                
+                $('span[name=leaveChannel]').on('click', function () {
+                    hub.server.leaveChannel($("#sessionId").attr('value'), $(this).attr('value'));
+                    window.location.href = '@Url.Action("LeaveChannel", "Agent", new { id = "ID" })'.replace("ID", $(this).attr('value'));;
+
+                });
+            });
+        });
+    </script>
+}
